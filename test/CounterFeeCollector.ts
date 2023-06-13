@@ -1,25 +1,38 @@
-import { loadFixture, setBalance } from "@nomicfoundation/hardhat-network-helpers";
+import { setBalance } from "@nomicfoundation/hardhat-network-helpers";
 import { CallWithSyncFeeRequest } from "@gelatonetwork/relay-sdk";
 import { callWithSyncFeeLocal } from "../mock/relay";
 import { NativeToken } from "../mock/constants";
-import { ethers } from "hardhat";
+import hre, { ethers, deployments } from "hardhat";
 import { expect } from "chai";
+import { CounterFeeCollector } from "../typechain/contracts/CounterFeeCollector";
+import { Signer } from "ethers";
+
+let counterAddress: string;
+let counter: CounterFeeCollector;
+let deployer: Signer;
 
 describe("CounterFeeCollector (sync fee with fee collector)", async () => {
-  const deploy = async () => {
-    const [deployer] = await ethers.getSigners();
+  beforeEach("tests", async function () {
+    if (hre.network.name !== "hardhat") {
+      console.error("Test Suite is meant to be run on hardhat only");
+      process.exit(1);
+    }
+    [deployer] = await ethers.getSigners();
 
-    const CounterFeeCollector = await ethers.getContractFactory("CounterFeeCollector");
-    const counter = await CounterFeeCollector.deploy();
+    await deployments.fixture();
 
-    return { counter, deployer };
-  }
+    counterAddress = (await deployments.get("CounterFeeCollector")).address;
+
+    counter = (await ethers.getContractAt(
+      "CounterFeeCollector",
+      counterAddress
+    )) as CounterFeeCollector;
+  });
 
   it("Should increment count (ETH)", async () => {
-    const { counter, deployer } = await loadFixture(deploy);
     expect(await counter.count()).to.equal(0);
 
-    await setBalance(counter.address, ethers.utils.parseEther('1'));
+    await setBalance(counter.address, ethers.utils.parseEther("1"));
 
     const { data } = await counter.populateTransaction.inc();
 
@@ -28,7 +41,7 @@ describe("CounterFeeCollector (sync fee with fee collector)", async () => {
       data: data!,
       feeToken: NativeToken,
       chainId: await deployer.getChainId(),
-      isRelayContext: false
+      isRelayContext: false,
     };
 
     await callWithSyncFeeLocal(request);
