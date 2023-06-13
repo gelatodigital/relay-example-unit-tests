@@ -1,0 +1,22 @@
+{
+  "name": "relay-unit-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@gelatonetwork/relay-context": "^3.0.0",
+    "@gelatonetwork/relay-sdk": "^4.0.0",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.8",
+    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "@openzeppelin/contracts": "^4.9.1",
+    "hardhat": "^2.14.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.3"
+  }
+}
