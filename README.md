@@ -4,11 +4,11 @@ This project demonstrates unit testing with Relay.
 It comes with sample counter contracts and unit tests for each.  
 Fee payment in ETH (native), as well as ERC20 tokens, is demonstrated where applicable.
 
-Until now, a challenge with Relay aware smart contract development has been testing locally.  
-For example, to call a `onlyGelatoRelay` function, the sender must be a trusted forwarder and context must be encoded in calldata.  
+Until now, a challenge with Relay aware smart contract development has been testing locally.
+For example, to call a `onlyGelatoRelay` function, the sender must be a trusted forwarder and context must be encoded in calldata.
 This makes writing unit tests tedious as relay backend behaviour has to be manually reimplemented locally.
 
-This project aims to solve that problem by providing local variants of relay functions whilst supporting the same interface.  
+This project aims to solve that problem by providing local variants of relay functions whilst supporting the same interface.
 All gelato contract logic is emulated locally so hardhat can run in its own instance (no gelato contracts present) as well as forked.
 
 ### Testing
@@ -20,7 +20,7 @@ const tx = await callWithSyncFeeLocal(request);
 
 ### Debugging (e.g., Tenderly)
 Generating calldata is as easy as swapping `callWithSyncFee` with `encodeWithSyncFee`.  
-Rather than executing the transaction, encoded calldata is returned which can be used for debugging in a Tenderly simulation.  
+Rather than executing the transaction, encoded calldata is returned which can be used for debugging in Tenderly.  
 ```ts
 const { to, from, data } = encodeWithSyncFee(request);
 ```
