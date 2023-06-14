@@ -1,9 +1,9 @@
-import hre, { deployments, getNamedAccounts } from "hardhat";
+import { deployments, getNamedAccounts, network } from "hardhat";
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { GelatoRelay1BalanceERC2771 } from "../mock/constants";
+import { GELATO_RELAY_1BALANCE_ERC2771 } from "../src/constants";
 
-const isHardhat = hre.network.name === "hardhat";
+const isHardhat = network.name === "hardhat";
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deploy } = deployments;
@@ -13,24 +13,10 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     console.log(
       `Deploying Counter to ${hre.network.name}. Hit ctrl + c to abort`
     );
-    // await sleep(5000);
+    await new Promise((r) => setTimeout(r, 5000));
   }
 
-  await deploy("Counter", {
-    from: deployer,
-    proxy: false,
-    args: [],
-    log: true,
-  });
-
-  await deploy("CounterContext", {
-    from: deployer,
-    proxy: false,
-    args: [],
-    log: true,
-  });
-
-  await deploy("CounterContextERC2771", {
+  await deploy("SimpleCounter", {
     from: deployer,
     proxy: false,
     args: [],
@@ -40,7 +26,21 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   await deploy("CounterERC2771", {
     from: deployer,
     proxy: false,
-    args: [GelatoRelay1BalanceERC2771],
+    args: [GELATO_RELAY_1BALANCE_ERC2771],
+    log: true,
+  });
+
+  await deploy("CounterRelayContext", {
+    from: deployer,
+    proxy: false,
+    args: [],
+    log: true,
+  });
+
+  await deploy("CounterRelayContextERC2771", {
+    from: deployer,
+    proxy: false,
+    args: [],
     log: true,
   });
 
@@ -50,12 +50,14 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     args: [],
     log: true,
   });
+
   await deploy("CounterFeeCollectorERC2771", {
     from: deployer,
     proxy: false,
     args: [],
     log: true,
   });
+
   await deploy("FeeToken", {
     from: deployer,
     proxy: false,
@@ -67,6 +69,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 func.skip = async () => {
   return false;
 };
+
 func.tags = ["Counter"];
 
 export default func;

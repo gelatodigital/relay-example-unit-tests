@@ -11,7 +11,7 @@ dotenv.config({ path: __dirname + "/.env" });
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.18",
+  solidity: "0.8.19",
   typechain: {
     outDir: "typechain",
     target: "ethers-v5",
@@ -25,7 +25,7 @@ const config: HardhatUserConfig = {
   // hardhat-deploy
   verify: {
     etherscan: {
-      apiKey: ETHERSCAN_API_KEY ? ETHERSCAN_API_KEY : "",
+      apiKey: ETHERSCAN_API_KEY || "",
     },
   },
 };

@@ -12,19 +12,25 @@ This project aims to solve that problem by providing local variants of relay fun
 All gelato contract logic is emulated locally so hardhat can run in its own instance (no gelato contracts present) as well as forked.
 
 ### Testing
+
 Calling the function locally is as easy as swapping `callWithSyncFee` with `callWithSyncFeeLocal`.  
 This encodes context in calldata and impersonates the appropriate trusted forwarder making it ideal for unit tests.
+
 ```ts
 const tx = await callWithSyncFeeLocal(request);
 ```
 
 ### Debugging (e.g., Tenderly)
+
 Generating calldata is as easy as swapping `callWithSyncFee` with `encodeWithSyncFee`.  
-Rather than executing the transaction, encoded calldata is returned which can be used for debugging in Tenderly.  
+Rather than executing the transaction, encoded calldata is returned which can be used for debugging in Tenderly.
+
 ```ts
 const { to, from, data } = encodeWithSyncFee(request);
 ```
+
 ---
+
 This project is in very early stages so feedback is much appreciated!
 
 # Contracts and tests

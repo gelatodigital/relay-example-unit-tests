@@ -2,12 +2,10 @@
 pragma solidity ^0.8.19;
 
 import {
-    GelatoRelayFeeCollectorERC2771
-} from "@gelatonetwork/relay-context/contracts/GelatoRelayFeeCollectorERC2771.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+    GelatoRelayContextERC2771
+} from "@gelatonetwork/relay-context/contracts/GelatoRelayContextERC2771.sol";
 
-contract CounterFeeCollectorERC2771 is GelatoRelayFeeCollectorERC2771 {
-    using Address for address payable;
+contract CounterRelayContextERC2771 is GelatoRelayContextERC2771 {
     mapping(address => uint256) public counter;
 
     event IncrementCounter(uint256 newCounterValue, address msgSender);
@@ -15,7 +13,7 @@ contract CounterFeeCollectorERC2771 is GelatoRelayFeeCollectorERC2771 {
     function increment() external onlyGelatoRelayERC2771 {
         address msgSender = _getMsgSender();
         counter[msgSender]++;
-        payable(_getFeeCollector()).sendValue(100);
+        _transferRelayFee();
 
         emit IncrementCounter(counter[msgSender], msgSender);
     }
