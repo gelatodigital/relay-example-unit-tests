@@ -47,17 +47,17 @@ This project is in very early stages so feedback is much appreciated!
 1. Install project dependencies
 
 ```
-npm install
+yarn install
 ```
 
 2. Compile the contracts
 
 ```
-npx hardhat compile
+yarn run hardhat compile
 ```
 
 3. Run the unit tests
 
 ```
-npx hardhat test
+yarn run hardhat test
 ```
