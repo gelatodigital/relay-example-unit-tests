@@ -12,7 +12,7 @@ import {
 const FEE = 1;
 
 const getBalance = async (address: string, token: string) => {
-  if (token === constants.NativeToken)
+  if (token === constants.NATIVE_TOKEN)
     return ethers.provider.getBalance(address);
 
   const erc20 = await ethers.getContractAt("ERC20", token);
@@ -25,11 +25,11 @@ const encodeContext = (
   return request.isRelayContext
     ? ethers.utils.solidityPack(
         ["bytes", "address", "address", "uint256"],
-        [request.data, constants.FeeCollector, request.feeToken, FEE]
+        [request.data, constants.FEE_COLLECTOR, request.feeToken, FEE]
       )
     : ethers.utils.solidityPack(
         ["bytes", "address"],
-        [request.data, constants.FeeCollector]
+        [request.data, constants.FEE_COLLECTOR]
       );
 };
 
@@ -44,7 +44,7 @@ const encodeWithSyncFee = (request: CallWithSyncFeeRequest): Transaction => {
 
   const tx: Transaction = {
     to: request.target,
-    from: constants.GelatoRelay,
+    from: constants.GELATO_RELAY,
     data: data,
   };
 
@@ -63,7 +63,7 @@ const encodeWithSyncFeeERC2771 = (
 
   const tx: Transaction = {
     to: request.target,
-    from: constants.GelatoRelayERC2771,
+    from: constants.GELATO_RELAY_ERC2771,
     data: data,
   };
 
@@ -71,12 +71,12 @@ const encodeWithSyncFeeERC2771 = (
 };
 
 const callWithSyncFeeBoth = async (tx: Transaction, feeToken: string) => {
-  const gelato = await ethers.getImpersonatedSigner(tx.from!);
+  const gelato = await ethers.getImpersonatedSigner(tx.from);
   await setBalance(gelato.address, ethers.utils.parseEther("1"));
 
-  const balanceBefore = await getBalance(constants.FeeCollector, feeToken);
+  const balanceBefore = await getBalance(constants.FEE_COLLECTOR, feeToken);
   const res = await gelato.sendTransaction({ to: tx.to, data: tx.data });
-  const balanceAfter = await getBalance(constants.FeeCollector, feeToken);
+  const balanceAfter = await getBalance(constants.FEE_COLLECTOR, feeToken);
 
   if (balanceAfter.toBigInt() - balanceBefore.toBigInt() < FEE)
     throw "Insufficient relay fee";
@@ -114,8 +114,9 @@ const sponsoredCallERC2771Local = async (
   sponsorApiKey: string
 ) => {
   const gelato = await ethers.getImpersonatedSigner(
-    constants.GelatoRelay1BalanceERC2771
+    constants.GELATO_RELAY_1BALANCE_ERC2771
   );
+
   await setBalance(gelato.address, ethers.utils.parseEther("1"));
 
   const data = ethers.utils.solidityPack(

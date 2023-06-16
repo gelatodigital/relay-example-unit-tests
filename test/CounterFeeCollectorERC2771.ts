@@ -1,9 +1,9 @@
 import { setBalance } from "@nomicfoundation/hardhat-network-helpers";
 import { CallWithSyncFeeERC2771Request } from "@gelatonetwork/relay-sdk";
-import { callWithSyncFeeERC2771Local } from "../mock/relay";
-import { NativeToken } from "../mock/constants";
-import hre, { ethers, deployments } from "hardhat";
-import { expect } from "chai";
+import { callWithSyncFeeERC2771Local } from "../src";
+import { NATIVE_TOKEN } from "../src/constants";
+import { ethers, deployments, network } from "hardhat";
+import { expect, assert } from "chai";
 import { CounterFeeCollectorERC2771 } from "../typechain/contracts/CounterFeeCollectorERC2771";
 import { Signer } from "ethers";
 
@@ -14,7 +14,7 @@ let deployerAddress: string;
 
 describe("CounterFeeCollectorERC2771 (sync fee with fee collector, sender)", async () => {
   beforeEach("tests", async function () {
-    if (hre.network.name !== "hardhat") {
+    if (network.name !== "hardhat") {
       console.error("Test Suite is meant to be run on hardhat only");
       process.exit(1);
     }
@@ -34,23 +34,25 @@ describe("CounterFeeCollectorERC2771 (sync fee with fee collector, sender)", asy
   });
 
   it("Should increment count (ETH)", async () => {
-    expect(await counter.count(deployerAddress)).to.equal(0);
+    expect(await counter.counter(deployerAddress)).to.equal(0);
 
     await setBalance(counter.address, ethers.utils.parseEther("1"));
 
-    const { data } = await counter.populateTransaction.inc();
+    const { data } = await counter.populateTransaction.increment();
+
+    if (!data) assert.fail("Invalid calldata");
 
     const request: CallWithSyncFeeERC2771Request = {
       target: counter.address,
       user: deployerAddress,
-      data: data!,
-      feeToken: NativeToken,
+      data: data,
+      feeToken: NATIVE_TOKEN,
       chainId: await deployer.getChainId(),
       isRelayContext: false,
     };
 
     await callWithSyncFeeERC2771Local(request, null);
 
-    expect(await counter.count(deployerAddress)).to.equal(1);
+    expect(await counter.counter(deployerAddress)).to.equal(1);
   });
 });
