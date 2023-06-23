@@ -17,7 +17,7 @@ describe("SimpleCounter (sponsored call)", async () => {
     }
     [deployer] = await ethers.getSigners();
 
-    await deployments.fixture();
+    await deployments.fixture("SimpleCounter");
 
     counterAddress = (await deployments.get("SimpleCounter")).address;
 
@@ -28,8 +28,10 @@ describe("SimpleCounter (sponsored call)", async () => {
   });
 
   it("Should increment count (1Balance)", async () => {
-    const { data } = await counter.populateTransaction.increment();
+    const counterBefore = await counter.counter();
+    expect(counterBefore.toBigInt()).to.equal(0n);
 
+    const { data } = await counter.populateTransaction.increment();
     if (!data) assert.fail("Invalid calldata");
 
     const request: SponsoredCallRequest = {
@@ -38,8 +40,9 @@ describe("SimpleCounter (sponsored call)", async () => {
       chainId: await deployer.getChainId(),
     };
 
-    await sponsoredCallLocal(request, "");
+    await sponsoredCallLocal(request);
 
-    expect(await counter.counter()).to.equal(1);
+    const counterAfter = await counter.counter();
+    expect(counterAfter.toBigInt()).to.equal(1n);
   });
 });

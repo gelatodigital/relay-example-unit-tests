@@ -18,7 +18,7 @@ describe("CounterERC2771 (sponsored call from trusted forwarder with sender)", a
     }
     [deployer] = await ethers.getSigners();
 
-    await deployments.fixture();
+    await deployments.fixture("CounterERC2771");
 
     counterAddress = (await deployments.get("CounterERC2771")).address;
 
@@ -31,10 +31,10 @@ describe("CounterERC2771 (sponsored call from trusted forwarder with sender)", a
   });
 
   it("Should increment count (1Balance)", async () => {
-    expect(await counter.counter(deployerAddress)).to.equal(0);
+    const counterBefore = await counter.counter(deployerAddress);
+    expect(counterBefore.toBigInt()).to.equal(0n);
 
     const { data } = await counter.populateTransaction.increment();
-
     if (!data) assert.fail("Invalid calldata");
 
     const request: CallWithERC2771Request = {
@@ -44,8 +44,9 @@ describe("CounterERC2771 (sponsored call from trusted forwarder with sender)", a
       chainId: await deployer.getChainId(),
     };
 
-    await sponsoredCallERC2771Local(request, null, "");
+    await sponsoredCallERC2771Local(request);
 
-    expect(await counter.counter(deployerAddress)).to.equal(1);
+    const counterAfter = await counter.counter(deployerAddress);
+    expect(counterAfter.toBigInt()).to.equal(1n);
   });
 });

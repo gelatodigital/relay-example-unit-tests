@@ -20,7 +20,7 @@ describe("CounterFeeCollectorERC2771 (sync fee with fee collector, sender)", asy
     }
     [deployer] = await ethers.getSigners();
 
-    await deployments.fixture();
+    await deployments.fixture("CounterFeeCollectorERC2771");
 
     counterAddress = (await deployments.get("CounterFeeCollectorERC2771"))
       .address;
@@ -34,12 +34,12 @@ describe("CounterFeeCollectorERC2771 (sync fee with fee collector, sender)", asy
   });
 
   it("Should increment count (ETH)", async () => {
-    expect(await counter.counter(deployerAddress)).to.equal(0);
+    const counterBefore = await counter.counter(deployerAddress);
+    expect(counterBefore.toBigInt()).to.equal(0n);
 
     await setBalance(counter.address, ethers.utils.parseEther("1"));
 
     const { data } = await counter.populateTransaction.increment();
-
     if (!data) assert.fail("Invalid calldata");
 
     const request: CallWithSyncFeeERC2771Request = {
@@ -51,8 +51,9 @@ describe("CounterFeeCollectorERC2771 (sync fee with fee collector, sender)", asy
       isRelayContext: false,
     };
 
-    await callWithSyncFeeERC2771Local(request, null);
+    await callWithSyncFeeERC2771Local(request);
 
-    expect(await counter.counter(deployerAddress)).to.equal(1);
+    const counterAfter = await counter.counter(deployerAddress);
+    expect(counterAfter.toBigInt()).to.equal(1n);
   });
 });

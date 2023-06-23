@@ -6,13 +6,13 @@ import { ethers, deployments, network } from "hardhat";
 import { expect, assert } from "chai";
 import { Signer } from "ethers";
 import { CounterRelayContext } from "../typechain/contracts/CounterRelayContext";
-import { FeeToken } from "../typechain/contracts/FeeToken";
+import { MockERC20 } from "../typechain/contracts/__mocks__/MockERC20";
 
 let counterAddress: string;
 let counter: CounterRelayContext;
 let deployer: Signer;
 let feeTokenAddress: string;
-let feeToken: FeeToken;
+let feeToken: MockERC20;
 
 describe("CounterRelayContext (sync fee with fee collector, fee token, fee)", async () => {
   beforeEach("tests", async function () {
@@ -22,7 +22,7 @@ describe("CounterRelayContext (sync fee with fee collector, fee token, fee)", as
     }
     [deployer] = await ethers.getSigners();
 
-    await deployments.fixture();
+    await deployments.fixture(["CounterRelayContext", "MockERC20"]);
 
     counterAddress = (await deployments.get("CounterRelayContext")).address;
 
@@ -31,21 +31,21 @@ describe("CounterRelayContext (sync fee with fee collector, fee token, fee)", as
       counterAddress
     )) as CounterRelayContext;
 
-    feeTokenAddress = (await deployments.get("FeeToken")).address;
+    feeTokenAddress = (await deployments.get("MockERC20")).address;
 
     feeToken = (await ethers.getContractAt(
-      "FeeToken",
+      "MockERC20",
       feeTokenAddress
-    )) as FeeToken;
+    )) as MockERC20;
   });
 
   it("Should increment count (ETH)", async () => {
-    expect(await counter.counter()).to.equal(0);
+    const counterBefore = await counter.counter();
+    expect(counterBefore.toBigInt()).to.equal(0n);
 
     await setBalance(counter.address, ethers.utils.parseEther("1"));
 
     const { data } = await counter.populateTransaction.increment();
-
     if (!data) assert.fail("Invalid calldata");
 
     const request: CallWithSyncFeeRequest = {
@@ -58,17 +58,18 @@ describe("CounterRelayContext (sync fee with fee collector, fee token, fee)", as
 
     await callWithSyncFeeLocal(request);
 
-    expect(await counter.counter()).to.equal(1);
+    const counterAfter = await counter.counter();
+    expect(counterAfter.toBigInt()).to.equal(1n);
   });
 
   it("Should increment count (ERC20)", async () => {
-    expect(await counter.counter()).to.equal(0);
+    const counterBefore = await counter.counter();
+    expect(counterBefore.toBigInt()).to.equal(0n);
 
     const balance = await feeToken.balanceOf(await deployer.getAddress());
     await feeToken.transfer(counter.address, balance);
 
     const { data } = await counter.populateTransaction.increment();
-
     if (!data) assert.fail("Invalid calldata");
 
     const request: CallWithSyncFeeRequest = {
@@ -81,6 +82,7 @@ describe("CounterRelayContext (sync fee with fee collector, fee token, fee)", as
 
     await callWithSyncFeeLocal(request);
 
-    expect(await counter.counter()).to.equal(1);
+    const counterAfter = await counter.counter();
+    expect(counterAfter.toBigInt()).to.equal(1n);
   });
 });

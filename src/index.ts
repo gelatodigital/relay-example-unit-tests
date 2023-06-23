@@ -92,7 +92,7 @@ const callWithSyncFeeLocal = (request: CallWithSyncFeeRequest) => {
 const callWithSyncFeeERC2771Local = (
   request: CallWithSyncFeeERC2771Request,
   /* eslint-disable */
-  provider: any
+  provider?: any
 ) => {
   const tx = encodeWithSyncFeeERC2771(request);
   return callWithSyncFeeBoth(tx, request.feeToken);
@@ -101,7 +101,7 @@ const callWithSyncFeeERC2771Local = (
 const sponsoredCallLocal = async (
   request: SponsoredCallRequest,
   /* eslint-disable */
-  sponsorApiKey: string
+  sponsorApiKey?: string
 ) => {
   const [deployer] = await ethers.getSigners();
   return deployer.sendTransaction({ to: request.target, data: request.data });
@@ -110,8 +110,8 @@ const sponsoredCallLocal = async (
 const sponsoredCallERC2771Local = async (
   request: CallWithERC2771Request,
   /* eslint-disable */
-  provider: any,
-  sponsorApiKey: string
+  provider?: any,
+  sponsorApiKey?: string
 ) => {
   const gelato = await ethers.getImpersonatedSigner(
     constants.GELATO_RELAY_1BALANCE_ERC2771
