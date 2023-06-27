@@ -1,13 +1,10 @@
 node_modules
-deployments
+deployments/localhost
 .env
 coverage
 coverage.json
 typechain
 typechain-types
-
 dist
-
-# Hardhat files
 cache
 artifacts
