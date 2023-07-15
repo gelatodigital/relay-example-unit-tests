@@ -15,7 +15,7 @@ const getBalance = async (address: string, token: string) => {
   if (token === constants.NATIVE_TOKEN)
     return ethers.provider.getBalance(address);
 
-  const erc20 = await ethers.getContractAt("ERC20", token);
+  const erc20 = await ethers.getContractAt("MockERC20", token);
   return erc20.balanceOf(address);
 };
 
