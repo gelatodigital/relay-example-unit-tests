@@ -1,6 +1,6 @@
 import { setBalance } from "@nomicfoundation/hardhat-network-helpers";
 import { CallWithSyncFeeERC2771Request } from "@gelatonetwork/relay-sdk";
-import { callWithSyncFeeERC2771Local } from "../src";
+import { callWithSyncFeeERC2771Local } from "../src/__mock__/relay-sdk";
 import { NATIVE_TOKEN } from "../src/constants";
 import { ethers, deployments, network } from "hardhat";
 import { expect, assert } from "chai";
@@ -27,7 +27,7 @@ describe("CounterFeeCollectorERC2771 (sync fee with fee collector, sender)", asy
 
     counter = (await ethers.getContractAt(
       "CounterFeeCollectorERC2771",
-      counterAddress
+      counterAddress,
     )) as CounterFeeCollectorERC2771;
 
     deployerAddress = await deployer.getAddress();

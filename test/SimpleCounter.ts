@@ -1,5 +1,5 @@
 import { SponsoredCallRequest } from "@gelatonetwork/relay-sdk";
-import { sponsoredCallLocal } from "../src";
+import { sponsoredCallLocal } from "../src/__mock__/relay-sdk";
 import { ethers, deployments, network } from "hardhat";
 import { expect, assert } from "chai";
 import { SimpleCounter } from "../typechain/contracts/SimpleCounter";
@@ -23,7 +23,7 @@ describe("SimpleCounter (sponsored call)", async () => {
 
     counter = (await ethers.getContractAt(
       "SimpleCounter",
-      counterAddress
+      counterAddress,
     )) as SimpleCounter;
   });
 

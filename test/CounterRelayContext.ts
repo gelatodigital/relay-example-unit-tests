@@ -1,6 +1,6 @@
 import { setBalance } from "@nomicfoundation/hardhat-network-helpers";
 import { CallWithSyncFeeRequest } from "@gelatonetwork/relay-sdk";
-import { callWithSyncFeeLocal } from "../src";
+import { callWithSyncFeeLocal } from "../src/__mock__/relay-sdk";
 import { NATIVE_TOKEN } from "../src/constants";
 import { ethers, deployments, network } from "hardhat";
 import { expect, assert } from "chai";
@@ -28,14 +28,14 @@ describe("CounterRelayContext (sync fee with fee collector, fee token, fee)", as
 
     counter = (await ethers.getContractAt(
       "CounterRelayContext",
-      counterAddress
+      counterAddress,
     )) as CounterRelayContext;
 
     feeTokenAddress = (await deployments.get("MockERC20")).address;
 
     feeToken = (await ethers.getContractAt(
       "MockERC20",
-      feeTokenAddress
+      feeTokenAddress,
     )) as MockERC20;
   });
 

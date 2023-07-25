@@ -1,5 +1,5 @@
 import { CallWithERC2771Request } from "@gelatonetwork/relay-sdk";
-import { sponsoredCallERC2771Local } from "../src";
+import { sponsoredCallERC2771Local } from "../src/__mock__/relay-sdk";
 import { ethers, deployments, network } from "hardhat";
 import { expect, assert } from "chai";
 import { CounterERC2771 } from "../typechain/contracts/CounterERC2771";
@@ -24,7 +24,7 @@ describe("CounterERC2771 (sponsored call from trusted forwarder with sender)", a
 
     counter = (await ethers.getContractAt(
       "CounterERC2771",
-      counterAddress
+      counterAddress,
     )) as CounterERC2771;
 
     deployerAddress = await deployer.getAddress();

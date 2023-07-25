@@ -1,6 +1,6 @@
 import { setBalance } from "@nomicfoundation/hardhat-network-helpers";
 import { ethers } from "hardhat";
-import * as constants from "./constants";
+import * as constants from "../constants";
 
 import {
   CallWithSyncFeeRequest,
@@ -20,16 +20,16 @@ const getBalance = async (address: string, token: string) => {
 };
 
 const encodeContext = (
-  request: CallWithSyncFeeRequest | CallWithSyncFeeERC2771Request
+  request: CallWithSyncFeeRequest | CallWithSyncFeeERC2771Request,
 ): string => {
   return request.isRelayContext
     ? ethers.utils.solidityPack(
         ["bytes", "address", "address", "uint256"],
-        [request.data, constants.FEE_COLLECTOR, request.feeToken, FEE]
+        [request.data, constants.FEE_COLLECTOR, request.feeToken, FEE],
       )
     : ethers.utils.solidityPack(
         ["bytes", "address"],
-        [request.data, constants.FEE_COLLECTOR]
+        [request.data, constants.FEE_COLLECTOR],
       );
 };
 
@@ -52,13 +52,13 @@ const encodeWithSyncFee = (request: CallWithSyncFeeRequest): Transaction => {
 };
 
 const encodeWithSyncFeeERC2771 = (
-  request: CallWithSyncFeeERC2771Request
+  request: CallWithSyncFeeERC2771Request,
 ): Transaction => {
   const context = encodeContext(request);
 
   const data = ethers.utils.solidityPack(
     ["bytes", "address"],
-    [context, request.user]
+    [context, request.user],
   );
 
   const tx: Transaction = {
@@ -92,7 +92,7 @@ const callWithSyncFeeLocal = (request: CallWithSyncFeeRequest) => {
 const callWithSyncFeeERC2771Local = (
   request: CallWithSyncFeeERC2771Request,
   /* eslint-disable */
-  provider?: any
+  provider?: any,
 ) => {
   const tx = encodeWithSyncFeeERC2771(request);
   return callWithSyncFeeBoth(tx, request.feeToken);
@@ -101,7 +101,7 @@ const callWithSyncFeeERC2771Local = (
 const sponsoredCallLocal = async (
   request: SponsoredCallRequest,
   /* eslint-disable */
-  sponsorApiKey?: string
+  sponsorApiKey?: string,
 ) => {
   const [deployer] = await ethers.getSigners();
   return deployer.sendTransaction({ to: request.target, data: request.data });
@@ -111,17 +111,17 @@ const sponsoredCallERC2771Local = async (
   request: CallWithERC2771Request,
   /* eslint-disable */
   provider?: any,
-  sponsorApiKey?: string
+  sponsorApiKey?: string,
 ) => {
   const gelato = await ethers.getImpersonatedSigner(
-    constants.GELATO_RELAY_1BALANCE_ERC2771
+    constants.GELATO_RELAY_1BALANCE_ERC2771,
   );
 
   await setBalance(gelato.address, ethers.utils.parseEther("1"));
 
   const data = ethers.utils.solidityPack(
     ["bytes", "address"],
-    [request.data, request.user]
+    [request.data, request.user],
   );
 
   return gelato.sendTransaction({ to: request.target, data });
