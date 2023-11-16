@@ -49,13 +49,15 @@ contract CounterRelayContextERC2771 is GelatoRelayContextERC2771 {
         counter[_getMsgSender()]++;
         emit IncrementCounter(counter[_getMsgSender()], _getMsgSender());
     }
-    function incrementFromFeeCappedWithPermit(FeeCappedPermit calldata permitData) 
-    external onlyGelatoRelayERC2771 {
+
+    function incrementFromFeeCappedWithPermit(
+        FeeCappedPermit calldata permitData
+    ) external onlyGelatoRelayERC2771 {
         _transferFromRelayFeeCappedWithPermit(
-            permitData.maxFee, 
-            permitData.deadline, 
-            permitData.v, 
-            permitData.r, 
+            permitData.maxFee,
+            permitData.deadline,
+            permitData.v,
+            permitData.r,
             permitData.s
         );
         // Incrementing the counter mapped to the _getMsgSender()
