@@ -12,7 +12,6 @@ dotenv.config({ path: __dirname + "/.env" });
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.19",
   typechain: {
     outDir: "typechain",
     target: "ethers-v5",
@@ -28,6 +27,17 @@ const config: HardhatUserConfig = {
     etherscan: {
       apiKey: ETHERSCAN_API_KEY || "",
     },
+  },
+  solidity: {
+    compilers: [
+      {
+        version: "0.8.19",
+        settings: {
+          optimizer: { enabled: true, runs: 200 },
+          viaIR: true
+        },
+      },
+    ],
   },
 };
 
